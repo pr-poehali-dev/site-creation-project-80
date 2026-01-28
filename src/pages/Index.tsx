@@ -3,10 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ name: '', email: '' });
+  const [cartItems, setCartItems] = useState([
+    { id: 1, game: 'Dota 2', title: '1000 MMR', price: 2500, quantity: 1 },
+    { id: 2, game: 'CS2', title: 'Аккаунт Prime', price: 1200, quantity: 1 },
+    { id: 4, game: 'Fortnite', title: '5000 V-Bucks', price: 3200, quantity: 1 },
+  ]);
 
   const categories = [
     { id: 1, name: 'Игровая валюта', icon: 'Coins', color: 'bg-primary' },
@@ -25,6 +37,33 @@ const Index = () => {
     { id: 5, game: 'League of Legends', title: 'Аккаунт Gold', price: 1500, seller: 'LeagueKing', rating: 4.7, sales: 345 },
     { id: 6, game: 'Apex Legends', title: '2000 Coins', price: 1100, seller: 'ApexPro', rating: 4.9, sales: 678 },
   ];
+
+  const orders = [
+    { id: 1, game: 'Valorant', title: '1000 VP', price: 800, date: '25.01.2024', status: 'Доставлено' },
+    { id: 2, game: 'Dota 2', title: '500 MMR', price: 1200, date: '23.01.2024', status: 'В обработке' },
+  ];
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleLogin = (email: string, password: string) => {
+    setIsLoggedIn(true);
+    setUser({ name: email.split('@')[0], email });
+  };
+
+  const handleRegister = (name: string, email: string, password: string) => {
+    setIsLoggedIn(true);
+    setUser({ name, email });
+  };
+
+  const removeFromCart = (id: number) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
+  };
+
+  const updateQuantity = (id: number, delta: number) => {
+    setCartItems(cartItems.map(item => 
+      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+    ));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -59,15 +98,194 @@ const Index = () => {
                 <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                 <Input placeholder="Поиск..." className="pl-10" />
               </div>
-              <Button onClick={() => setActiveSection('cart')} variant="outline" size="icon" className="relative">
-                <Icon name="ShoppingCart" size={20} />
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-xs flex items-center justify-center text-background font-semibold">
-                  3
-                </span>
-              </Button>
-              <Button onClick={() => setActiveSection('profile')} variant="outline" size="icon">
-                <Icon name="User" size={20} />
-              </Button>
+              
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="relative">
+                    <Icon name="ShoppingCart" size={20} />
+                    {cartItems.length > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-xs flex items-center justify-center text-background font-semibold">
+                        {cartItems.length}
+                      </span>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-lg">
+                  <SheetHeader>
+                    <SheetTitle className="text-2xl font-bold">Корзина</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-8 space-y-4">
+                    {cartItems.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Icon name="ShoppingCart" className="mx-auto mb-4 text-muted-foreground" size={64} />
+                        <p className="text-muted-foreground">Корзина пуста</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                          {cartItems.map((item) => (
+                            <Card key={item.id} className="p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex-1">
+                                  <Badge variant="secondary" className="mb-2 bg-secondary/20 text-secondary border-secondary/30">
+                                    {item.game}
+                                  </Badge>
+                                  <h4 className="font-bold">{item.title}</h4>
+                                  <p className="text-primary font-bold mt-1">{item.price} ₽</p>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)}>
+                                  <Icon name="X" size={18} />
+                                </Button>
+                              </div>
+                              <div className="flex items-center gap-2 mt-4">
+                                <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, -1)}>
+                                  <Icon name="Minus" size={14} />
+                                </Button>
+                                <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                                <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, 1)}>
+                                  <Icon name="Plus" size={14} />
+                                </Button>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                        <Separator />
+                        <div className="space-y-4">
+                          <div className="flex justify-between text-lg font-bold">
+                            <span>Итого:</span>
+                            <span className="text-primary">{cartTotal} ₽</span>
+                          </div>
+                          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" size="lg">
+                            <Icon name="CreditCard" className="mr-2" size={20} />
+                            Оформить заказ
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              {isLoggedIn ? (
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Icon name="User" size={20} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="w-full sm:max-w-lg">
+                    <SheetHeader>
+                      <SheetTitle className="text-2xl font-bold">Личный кабинет</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-8 space-y-6">
+                      <Card className="p-6 bg-gradient-to-br from-primary/10 to-secondary/10">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                            <Icon name="User" size={32} className="text-primary-foreground" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-xl">{user.name}</h3>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                          </div>
+                        </div>
+                      </Card>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">Мои заказы</h4>
+                        {orders.map((order) => (
+                          <Card key={order.id} className="p-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <Badge variant="secondary" className="mb-1 bg-secondary/20 text-secondary border-secondary/30">
+                                  {order.game}
+                                </Badge>
+                                <h5 className="font-semibold">{order.title}</h5>
+                                <p className="text-sm text-muted-foreground">{order.date}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-primary">{order.price} ₽</p>
+                                <Badge className={order.status === 'Доставлено' ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}>
+                                  {order.status}
+                                </Badge>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Icon name="Settings" className="mr-2" size={18} />
+                          Настройки профиля
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Icon name="Wallet" className="mr-2" size={18} />
+                          Мой кошелёк
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start text-destructive" onClick={() => setIsLoggedIn(false)}>
+                          <Icon name="LogOut" className="mr-2" size={18} />
+                          Выйти
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Icon name="User" size={20} />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl font-bold text-center">Добро пожаловать!</DialogTitle>
+                    </DialogHeader>
+                    <Tabs defaultValue="login" className="mt-4">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="login">Вход</TabsTrigger>
+                        <TabsTrigger value="register">Регистрация</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="login" className="space-y-4 mt-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="login-email">Email</Label>
+                          <Input id="login-email" type="email" placeholder="your@email.com" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="login-password">Пароль</Label>
+                          <Input id="login-password" type="password" placeholder="••••••••" />
+                        </div>
+                        <Button 
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
+                          onClick={() => handleLogin('user@example.com', 'password')}
+                        >
+                          Войти
+                        </Button>
+                      </TabsContent>
+                      <TabsContent value="register" className="space-y-4 mt-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="register-name">Имя</Label>
+                          <Input id="register-name" placeholder="Ваше имя" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="register-email">Email</Label>
+                          <Input id="register-email" type="email" placeholder="your@email.com" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="register-password">Пароль</Label>
+                          <Input id="register-password" type="password" placeholder="••••••••" />
+                        </div>
+                        <Button 
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                          onClick={() => handleRegister('Новый пользователь', 'newuser@example.com', 'password')}
+                        >
+                          Зарегистрироваться
+                        </Button>
+                      </TabsContent>
+                    </Tabs>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
           </div>
         </div>
