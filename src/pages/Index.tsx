@@ -135,10 +135,10 @@ const Index = () => {
   });
 
   const renderHome = () => (
-    <>
+    <div className="animate-fade-in">
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 py-20 md:py-32">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center animate-fade-in-up">
             <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30">
               🔥 Безопасные сделки с гарантией
             </Badge>
@@ -174,8 +174,8 @@ const Index = () => {
             </Button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
-              <Card key={category.id} onClick={() => { setSelectedCategory(category.name); setActiveSection('catalog'); }} className="group cursor-pointer transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/20 border-border bg-card">
+            {categories.map((category, index) => (
+              <Card key={category.id} onClick={() => { setSelectedCategory(category.name); setActiveSection('catalog'); }} className="group cursor-pointer transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/20 border-border bg-card animate-scale-in" style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}>
                 <CardContent className="p-6 text-center">
                   <div className={`${category.color} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon name={category.icon as any} size={32} className="text-background" />
@@ -198,8 +198,8 @@ const Index = () => {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.slice(0, 3).map((product) => (
-              <Card key={product.id} className="group overflow-hidden border-border hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/10">
+            {products.slice(0, 3).map((product, index) => (
+              <Card key={product.id} className="group overflow-hidden border-border hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/10 animate-fade-in-up" style={{ animationDelay: `${index * 0.15}s`, animationFillMode: 'backwards' }}>
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <Badge variant="secondary" className="bg-secondary/20 text-secondary border-secondary/30">
@@ -246,21 +246,21 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center">
             <h3 className="text-3xl md:text-4xl font-bold mb-6">Почему выбирают нас?</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-              <div className="text-center">
+              <div className="text-center animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
                 <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Icon name="Shield" size={32} className="text-primary-foreground" />
                 </div>
                 <h4 className="font-bold text-lg mb-2">Безопасность</h4>
                 <p className="text-muted-foreground text-sm">Гарантия защиты всех сделок</p>
               </div>
-              <div className="text-center">
+              <div className="text-center animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
                 <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Icon name="Zap" size={32} className="text-secondary-foreground" />
                 </div>
                 <h4 className="font-bold text-lg mb-2">Быстро</h4>
                 <p className="text-muted-foreground text-sm">Моментальная доставка товаров</p>
               </div>
-              <div className="text-center">
+              <div className="text-center animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'backwards' }}>
                 <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Icon name="Headphones" size={32} className="text-accent-foreground" />
                 </div>
@@ -271,12 +271,13 @@ const Index = () => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 
   const renderCatalog = () => (
-    <section className="py-12 md:py-16 min-h-[80vh]">
-      <div className="container mx-auto px-4">
+    <div className="animate-fade-in">
+      <section className="py-12 md:py-16 min-h-[80vh]">
+        <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
           <h3 className="text-2xl md:text-3xl font-bold">
             {selectedCategory || 'Каталог товаров'}
@@ -344,8 +345,8 @@ const Index = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedProducts.map((product) => (
-            <Card key={product.id} className="group overflow-hidden border-border hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/10">
+          {sortedProducts.map((product, index) => (
+            <Card key={product.id} className="group overflow-hidden border-border hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/10 animate-slide-in-right" style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}>
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <Badge variant="secondary" className="bg-secondary/20 text-secondary border-secondary/30">
@@ -386,10 +387,12 @@ const Index = () => {
         </div>
       </div>
     </section>
+    </div>
   );
 
   const renderSellers = () => (
-    <section className="py-12 md:py-16 min-h-[80vh]">
+    <div className="animate-fade-in">
+      <section className="py-12 md:py-16 min-h-[80vh]">
       <div className="container mx-auto px-4">
         <h3 className="text-2xl md:text-3xl font-bold mb-8">Топ продавцов</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -417,10 +420,12 @@ const Index = () => {
         </div>
       </div>
     </section>
+    </div>
   );
 
   const renderRatings = () => (
-    <section className="py-12 md:py-16 min-h-[80vh]">
+    <div className="animate-fade-in">
+      <section className="py-12 md:py-16 min-h-[80vh]">
       <div className="container mx-auto px-4">
         <h3 className="text-2xl md:text-3xl font-bold mb-8">Рейтинги и отзывы</h3>
         <div className="max-w-4xl mx-auto space-y-4">
@@ -449,10 +454,12 @@ const Index = () => {
         </div>
       </div>
     </section>
+    </div>
   );
 
   const renderSupport = () => (
-    <section className="py-12 md:py-16 min-h-[80vh]">
+    <div className="animate-fade-in">
+      <section className="py-12 md:py-16 min-h-[80vh]">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center">Поддержка</h3>
@@ -491,6 +498,7 @@ const Index = () => {
         </div>
       </div>
     </section>
+    </div>
   );
 
   return (
